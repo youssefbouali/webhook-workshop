@@ -1,0 +1,26 @@
+version: '3.8'
+services:
+  webhook-receiver:
+    build: ./webhook-receiver
+    ports:
+      - "8081:8081"
+    environment:
+      - WEBHOOK_SECRET=my-super-secret-key-12345
+    networks:
+      - webhook-network
+
+  webhook-sender:
+    build: ./webhook-sender
+    ports:
+      - "8080:8080"
+    environment:
+      - WEBHOOK_RECEIVER_URL=http://webhook-receiver:8081/webhooks/receive
+      - WEBHOOK_SECRET=my-super-secret-key-12345
+    depends_on:
+      - webhook-receiver
+    networks:
+      - webhook-network
+
+networks:
+  webhook-network:
+    driver: bridge
