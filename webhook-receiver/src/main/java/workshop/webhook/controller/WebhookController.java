@@ -27,7 +27,13 @@ public class WebhookController {
             @RequestHeader("X-Webhook-Signature") String signature,
             HttpServletRequest request) {
 
-        String rawPayload = payload.toString(); // En prod : utiliser le body brut
+        // Serialize payload using the same logic as webhook-sender
+        String rawPayload = String.format("eventType=%s&timestamp=%s&data=%s",
+                payload.eventType(), payload.timestamp(), payload.data());
+
+        // Debug log for payload and signature
+        System.out.println("Received Payload: " + rawPayload);
+        System.out.println("Received Signature: " + signature);
 
         if (!securityService.verifySignature(rawPayload, signature)) {
             return ResponseEntity.status(401).body("Invalid signature");

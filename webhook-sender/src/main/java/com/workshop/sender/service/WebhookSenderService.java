@@ -32,6 +32,10 @@ public class WebhookSenderService {
                 String payloadString = serializePayload(payload);
                 String signature = securityService.calculateSignature(payloadString);
 
+                // Debug log for payload and signature
+                System.out.println("Sending Payload: " + payloadString);
+                System.out.println("Calculated Signature: " + signature);
+
                 HttpHeaders headers = new HttpHeaders();
                 headers.setContentType(MediaType.APPLICATION_JSON);
                 headers.set("X-Webhook-Signature", signature);

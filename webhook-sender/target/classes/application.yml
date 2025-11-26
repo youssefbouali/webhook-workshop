@@ -4,4 +4,4 @@ server:
 webhook:
   receiver:
     url: http://localhost:8081/webhooks/receive
-  secret: my-super-secret-key-12345
+  secret: "my-super-secret-key-12345"
