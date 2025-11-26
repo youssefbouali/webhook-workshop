@@ -1,12 +1,11 @@
 package com.workshop.sender.service;
 
 import com.workshop.webhook.model.WebhookPayload;
+import com.workshop.webhook.service.WebhookSecurityService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -16,7 +15,6 @@ public class WebhookSenderService {
 
     private final RestTemplate restTemplate;
     private final WebhookSecurityService securityService;
-    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Value("${webhook.receiver.url:http://localhost:8081/webhooks/receive}")
     private String webhookReceiverUrl;
@@ -30,12 +28,14 @@ public class WebhookSenderService {
         return CompletableFuture.supplyAsync(() -> {
             try {
                 WebhookPayload payload = new WebhookPayload(eventType, LocalDateTime.now(), data, null);
-                String payloadJson = objectMapper.writeValueAsString(payload);
-                String signature = securityService.calculateSignature(payloadJson);
+
+                String payloadString = serializePayload(payload);
+                String signature = securityService.calculateSignature(payloadString);
 
                 HttpHeaders headers = new HttpHeaders();
                 headers.setContentType(MediaType.APPLICATION_JSON);
                 headers.set("X-Webhook-Signature", signature);
+                headers.set("User-Agent", "Webhook-Sender/1.0");
 
                 HttpEntity<WebhookPayload> request = new HttpEntity<>(payload, headers);
 
@@ -48,5 +48,10 @@ public class WebhookSenderService {
                 return false;
             }
         });
+    }
+
+    private String serializePayload(WebhookPayload payload) {
+        return String.format("eventType=%s&timestamp=%s&data=%s",
+            payload.eventType(), payload.timestamp(), payload.data());
     }
 }

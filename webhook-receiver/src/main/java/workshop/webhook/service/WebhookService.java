@@ -1,7 +1,7 @@
 package com.workshop.webhook.service;
 
-import com.workshop.webhook.model.WebhookHistory;
 import com.workshop.webhook.model.WebhookPayload;
+import com.workshop.webhook.model.WebhookHistory;
 import com.workshop.webhook.repository.WebhookHistoryRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -21,8 +21,7 @@ public class WebhookService {
     }
 
     public void processWebhook(WebhookPayload payload, String sourceIp) {
-        String jsonPayload = serializePayload(payload);
-        WebhookHistory history = new WebhookHistory(payload.eventType(), jsonPayload, sourceIp);
+        WebhookHistory history = new WebhookHistory(payload.eventType(), serializePayload(payload), sourceIp);
 
         try {
             switch (payload.eventType()) {
@@ -43,15 +42,23 @@ public class WebhookService {
         historyRepository.save(history);
     }
 
-    private void processPayment(WebhookPayload p) { System.out.println("Processing payment: " + p.data()); }
-    private void processUserRegistration(WebhookPayload p) { System.out.println("Processing user registration: " + p.data()); }
-    private void processOrderShipped(WebhookPayload p) { System.out.println("Processing order shipment: " + p.data()); }
+    private void processPayment(WebhookPayload payload) {
+        System.out.println("Processing payment: " + payload.data());
+    }
+
+    private void processUserRegistration(WebhookPayload payload) {
+        System.out.println("Processing user registration: " + payload.data());
+    }
+
+    private void processOrderShipped(WebhookPayload payload) {
+        System.out.println("Processing order shipment: " + payload.data());
+    }
 
     private String serializePayload(WebhookPayload payload) {
         try {
             return objectMapper.writeValueAsString(payload);
         } catch (JsonProcessingException e) {
-            return "{\"error\": \"serialization failed\"}";
+            return "Error serializing payload: " + e.getMessage();
         }
     }
 

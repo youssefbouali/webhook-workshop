@@ -7,7 +7,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.concurrent.CompletableFuture;
 
 @RestController
@@ -28,13 +27,15 @@ public class WebhookController {
             @RequestHeader("X-Webhook-Signature") String signature,
             HttpServletRequest request) {
 
-        String rawPayload = payload.toString(); // Attention : en prod, lire le body brut via @RequestBody String body
+        String rawPayload = payload.toString(); // En prod : utiliser le body brut
+
         if (!securityService.verifySignature(rawPayload, signature)) {
             return ResponseEntity.status(401).body("Invalid signature");
         }
 
-        CompletableFuture.runAsync(() ->
-                webhookService.processWebhook(payload, request.getRemoteAddr()));
+        CompletableFuture.runAsync(() -> {
+            webhookService.processWebhook(payload, request.getRemoteAddr());
+        });
 
         return ResponseEntity.accepted().body("Webhook received and processing");
     }

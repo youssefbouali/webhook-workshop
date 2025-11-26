@@ -40,7 +40,7 @@ public class WebhookHistory {
     public void setId(Long id) { this.id = id; }
     public String getEventType() { return eventType; }
     public void setEventType(String eventType) { this.eventType = eventType; }
-    public LocalDateTime getReceivedAt()紧 { return receivedAt; }
+    public LocalDateTime getReceivedAt() { return receivedAt; }
     public void setReceivedAt(LocalDateTime receivedAt) { this.receivedAt = receivedAt; }
     public String getPayload() { return payload; }
     public void setPayload(String payload) { this.payload = payload; }
