@@ -1,0 +1,6 @@
+com\workshop\sender\config\RestTemplateConfig.class
+com\workshop\sender\controller\TestController.class
+com\workshop\webhook\model\WebhookPayload.class
+com\workshop\sender\service\WebhookSenderService.class
+com\workshop\webhook\service\WebhookSecurityService.class
+com\workshop\sender\WebhookSenderApplication.class

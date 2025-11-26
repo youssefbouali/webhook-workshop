@@ -1,0 +1,7 @@
+server:
+  port: 8080
+
+webhook:
+  receiver:
+    url: http://localhost:8081/webhooks/receive
+  secret: my-super-secret-key-12345
